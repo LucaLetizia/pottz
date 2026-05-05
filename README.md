@@ -239,6 +239,12 @@ adapter: {
 
 ---
 
+## Example
+
+See `examples/sveltekit-basic` for a working example demonstrating most of the features listed in [What works](#what-works)
+
+---
+
 ## License
 
 MIT

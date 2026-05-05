@@ -34,10 +34,9 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .DS_Store
 
 # Examples
-examples
-# examples/*/build/
-# examples/*/dist/
-# examples/*/node_modules/
-# examples/*/.svelte-kit/
-# examples/*/desktop/vfs.generated.ts
-# examples/*/desktop/desktop-entry.generated.ts
+examples/*/build/
+examples/*/dist/
+examples/*/node_modules/
+examples/*/.svelte-kit/
+examples/*/desktop/vfs.generated.ts
+examples/*/desktop/desktop-entry.generated.ts
