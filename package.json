@@ -1,0 +1,66 @@
+{
+  "name": "pottz",
+  "version": "0.1.2",
+  "description": "Ship your SvelteKit app as a native desktop app",
+  "author": {
+    "name": "lucaletizia",
+    "url": "https://github.com/lucaletizia"
+  },
+  "bin": {
+    "pottz": "dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "dev": "bun run src/cli.ts",
+    "build": "bun build ./src/cli.ts ./src/index.ts --outdir ./dist --target bun && tsc -p tsconfig.build.json",
+    "prepublishOnly": "bun test && bun run build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "typecheck": "tsc --noEmit"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucaletizia/pottz.git"
+  },
+  "keywords": [
+    "sveltekit",
+    "desktop",
+    "bun",
+    "webview"
+  ],
+  "license": "MIT",
+  "engines": {
+    "bun": ">=1.1.0"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/bun": "latest",
+    "eslint": "^10.2.1",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.0",
+    "webview-bun": "^2.4.0"
+  },
+  "peerDependencies": {
+    "webview-bun": "^2.4.0"
+  },
+  "peerDependenciesMeta": {
+    "webview-bun": {
+      "optional": true
+    }
+  }
+}
