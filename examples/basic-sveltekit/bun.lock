@@ -4,9 +4,6 @@
   "workspaces": {
     "": {
       "name": "pottz-basic-sveltekit-example",
-      "dependencies": {
-        "webview-bun": "^2.4.0",
-      },
       "devDependencies": {
         "@eslint/compat": "^2.0.4",
         "@eslint/js": "^10.0.1",
@@ -28,6 +25,7 @@
         "typescript": "^6.0.2",
         "typescript-eslint": "^8.58.1",
         "vite": "^8.0.7",
+        "webview-bun": "^2.4.0",
       },
     },
   },

@@ -45,6 +45,19 @@ sudo apt install libgtk-4-1 libwebkitgtk-6.0-4 libvulkan1
 
 ---
 
+## Running the CLI
+
+Pottz can be run with any of the following:
+
+```bash
+bunx pottz <command>
+npx pottz <command>
+pnpm dlx pottz <command>
+yarn dlx pottz <command>
+```
+
+---
+
 ## Quick start
 
 ```bash
@@ -64,17 +77,47 @@ bunx pottz build
 
 ## Installation
 
-Pottz is a CLI tool. You don't need to install it - just use `bunx`:
+Pottz is a CLI tool that runs with Bun, but it is **package manager agnostic**. It does not require Bun as your package manager.
+
+You can use it in npm, pnpm, yarn, or bun projects.
+
+Recommended usage:
 
 ```bash
 bunx pottz init
 ```
 
-Or install it as a dev dependency:
+Or install it as a dev dependency if you prefer:
 
 ```bash
-bun add -D pottz
+bun add -d pottz
 ```
+
+---
+
+## Package manager support
+
+Pottz does not require your project to use Bun.
+
+It automatically detects your project’s package manager and uses it when:
+
+- installing dependencies (e.g. `webview-bun`)
+- running scripts during development and build
+
+Supported package managers:
+
+- npm
+- pnpm
+- yarn
+- bun
+
+Detection is based on lockfiles (`bun.lock`, `pnpm-lock.yaml`, `yarn.lock`).
+
+This means:
+
+- You can run Pottz in an npm project without changes
+- You do not need to migrate to Bun
+- Bun is only required to execute the CLI itself
 
 ---
 
@@ -105,7 +148,6 @@ This will:
 - Patch your `svelte.config.js` with the required CSRF config
 - Create `pottz.config.js`
 - Install `webview-bun`
-- Add `build:desktop` and `dev:desktop` scripts to `package.json`
 - Update `.gitignore`
 
 ### 3. Edit `pottz.config.js`
@@ -147,8 +189,6 @@ export default {
 ### 4. Build
 
 ```bash
-bun run build:desktop
-# or
 bunx pottz build
 ```
 
@@ -241,7 +281,7 @@ adapter: {
 
 ## Example
 
-See `examples/sveltekit-basic` for a working example demonstrating most of the features listed in [What works](#what-works)
+See `examples/basic-sveltekit` for a working example demonstrating most of the features listed in [What works](#what-works)
 
 ---
 

@@ -34,44 +34,6 @@ export const patchWindowsSubsystem = async (filePath: string) => {
 };
 
 // ============================================
-// PACKAGE.JSON PATCHING
-// ============================================
-
-export const patchPackageJson = async () => {
-  log.step('Adding scripts to package.json...');
-
-  const content = await readFile('package.json', 'utf-8');
-  const pkg = JSON.parse(content);
-
-  pkg.scripts = pkg.scripts ?? {};
-
-  let changed = false;
-
-  if (pkg.scripts['build:desktop']) {
-    log.warn('build:desktop script already exists, skipping');
-  } else {
-    pkg.scripts['build:desktop'] = 'bunx pottz build';
-    changed = true;
-  }
-
-  if (pkg.scripts['dev:desktop']) {
-    log.warn('dev:desktop script already exists, skipping');
-  } else {
-    pkg.scripts['dev:desktop'] = 'bunx pottz dev';
-    changed = true;
-  }
-
-  if (changed) {
-    await writeFile(
-      'package.json',
-      JSON.stringify(pkg, null, 2) + '\n',
-      'utf-8',
-    );
-    log.success('Added build:desktop and dev:desktop scripts');
-  }
-};
-
-// ============================================
 // GITIGNORE PATCHING
 // ============================================
 
