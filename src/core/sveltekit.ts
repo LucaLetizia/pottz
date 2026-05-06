@@ -24,7 +24,6 @@ export const buildSvelteKit = async () => {
   const code = await execCommand({
     cmd,
     args,
-    options: { env: { ...process.env, NODE_ENV: 'production' } },
   });
 
   if (code !== 0) panic('SvelteKit build failed');
