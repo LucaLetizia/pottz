@@ -1,7 +1,11 @@
 import { existsSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { log, panic } from '../utils/log';
-import { detectPackageManager } from '../utils/platform';
+import {
+  detectPackageManager,
+  execCommand,
+  getPackageManager,
+} from '../utils/platform';
 
 const CSRF_INSTRUCTIONS = `
 ⚠  Add this to your svelte.config.js/ts kit config:
@@ -15,12 +19,14 @@ const CSRF_INSTRUCTIONS = `
 
 export const buildSvelteKit = async () => {
   log.step('Building SvelteKit...');
-  const proc = Bun.spawn(['bun', 'vite', 'build'], {
-    env: { ...process.env, NODE_ENV: 'production' },
-    stdout: 'inherit',
-    stderr: 'inherit',
+  const pm = getPackageManager();
+  const { cmd, args } = pm.run('build');
+  const code = await execCommand({
+    cmd,
+    args,
+    options: { env: { ...process.env, NODE_ENV: 'production' } },
   });
-  const code = await proc.exited;
+
   if (code !== 0) panic('SvelteKit build failed');
   log.success('SvelteKit build complete');
 };
@@ -61,7 +67,7 @@ export const checkAdapterNode = async () => {
 
   if (!deps['@sveltejs/adapter-node']) {
     const pm = detectPackageManager();
-    const addCmd = pm === 'npm' ? 'npm install -D' : `${pm} add -d`;
+    const addCmd = pm === 'npm' ? 'npm install -D' : `${pm} add -D`;
     log.blank();
     log.warn('@sveltejs/adapter-node is not installed');
     log.info('Pottz requires adapter-node. Install it with:');
@@ -82,7 +88,7 @@ export const detectAdapter = async (outDir: string): Promise<void> => {
       existsSync(`./${outDir}/client/index.html`)
     ) {
       const pm = detectPackageManager();
-      const addCmd = pm === 'npm' ? 'npm install -D' : `${pm} add -d`;
+      const addCmd = pm === 'npm' ? 'npm install -D' : `${pm} add -D`;
 
       panic(
         'adapter-static detected. Pottz currently requires adapter-node\n' +

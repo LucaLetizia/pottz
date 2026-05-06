@@ -5,7 +5,7 @@ import {
   validateSvelteKitProject,
 } from '../core/sveltekit';
 import { installWebviewBun, scaffoldConfig } from '../core/config';
-import { patchGitignore, patchPackageJson } from '../core/patcher';
+import { patchGitignore } from '../core/patcher';
 
 export const run = async () => {
   log.blank();
@@ -27,9 +27,6 @@ export const run = async () => {
   // 5. Install webview-bun
   await installWebviewBun();
 
-  // 6. Patch package.json scripts
-  await patchPackageJson();
-
   // 7. Patch .gitignore
   await patchGitignore();
 
@@ -37,8 +34,22 @@ export const run = async () => {
   log.blank();
   log.success('Pottz initialised successfully!');
   log.blank();
+
   log.info('Next steps:');
   log.info('1. Edit pottz.config.js to set your app name and window size');
-  log.info('2. Run: bun run build:desktop');
+  log.blank();
+
+  log.info('Running Pottz:');
+  log.info('• Without installing:');
+  log.info('  bunx pottz dev');
+  log.info('  npx pottz dev');
+  log.info('  pnpm dlx pottz dev');
+  log.info('  yarn dlx pottz dev');
+  log.blank();
+
+  log.info('• If installed as a dependency (optional):');
+  log.info('  You can add scripts to package.json:');
+  log.info('    "dev:desktop": "pottz dev",');
+  log.info('    "build:desktop": "pottz build"');
   log.blank();
 };

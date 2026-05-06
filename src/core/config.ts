@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { readFile, writeFile } from 'node:fs/promises';
 import { log, panic } from '../utils/log';
+import { execCommand, getPackageManager } from '../utils/platform';
 
 export type Target =
   | 'linux-x64'
@@ -167,12 +168,10 @@ export const installWebviewBun = async () => {
     return;
   }
 
-  const proc = Bun.spawn(['bun', 'install', 'webview-bun'], {
-    stdout: 'inherit',
-    stderr: 'inherit',
-  });
+  const pm = getPackageManager();
+  const { cmd, args } = pm.installDev('webview-bun');
+  const code = await execCommand({ cmd, args });
 
-  const code = await proc.exited;
   if (code !== 0) {
     log.warn('Failed to install webview-bun automatically');
     log.info('Install it manually with: bun install webview-bun');

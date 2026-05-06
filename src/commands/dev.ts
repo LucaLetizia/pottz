@@ -1,7 +1,11 @@
 import { log, panic } from '../utils/log';
 import { loadConfig } from '../core/config';
 import { existsSync } from 'node:fs';
-import { checkWebviewBun } from '../utils/platform';
+import {
+  checkWebviewBun,
+  execStream,
+  getPackageManager,
+} from '../utils/platform';
 
 export const run = async () => {
   checkWebviewBun();
@@ -24,11 +28,12 @@ export const run = async () => {
   log.blank();
 
   // Start Vite dev server
+  const pm = getPackageManager();
+  const { cmd, args } = pm.run('dev');
+
   log.step('Starting Vite dev server...');
-  const vite = Bun.spawn(['bun', 'run', 'dev'], {
-    stdout: 'pipe',
-    stderr: 'inherit',
-  });
+
+  const vite = execStream({ cmd, args });
 
   // Read Vite port from stdout
   const port = await readVitePort(vite.stdout!);
