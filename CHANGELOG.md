@@ -2,7 +2,7 @@
 
 All notable changes to Pottz will be documented in this file.
 
-## 1.3.4
+## 0.1.4
 
 ### Fixed
 
