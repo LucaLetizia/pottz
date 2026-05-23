@@ -8,7 +8,7 @@ export default {
     minHeight: 600,
   },
   build: {
-    targets: ['linux-x64', 'windows-x64'],
+    targets: ['linux-x64', 'windows-x64', 'darwin-x64'],
     outDir: 'dist',
     appName: 'my-app',
     windows: {

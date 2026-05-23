@@ -106,12 +106,12 @@ export default {
     const configContent = `
 export default {
   window: { title: 'Test' },
-  build: { targets: ['linux-x64', 'windows-x64', 'linux-arm64'], outDir: 'dist', appName: 'test' },
+  build: { targets: ['linux-x64', 'windows-x64', 'linux-arm64', 'darwin-x64', 'darwin-arm64'], outDir: 'dist', appName: 'test' },
 };
 `;
     await writeFile(join(tmpDir, 'pottz.config.js'), configContent, 'utf-8');
     const config = await loadConfig(tmpDir);
-    expect(config.build.targets).toHaveLength(3);
+    expect(config.build.targets).toHaveLength(5);
     expect(config.build.targets).toContain('windows-x64');
   });
 });
