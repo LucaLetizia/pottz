@@ -11,6 +11,7 @@ export type Target =
   | 'windows-arm64';
 
 export interface PottzConfig {
+  onStartup?: () => Promise<void> | void;
   window: {
     title: string;
     width?: number;
@@ -46,6 +47,7 @@ const VALID_TARGETS = [
 
 export const CONFIG_TEMPLATE = `/** @type {import('pottz').PottzConfig} */
 export default {
+  //onStartup: async () => {},
   window: {
     title: 'My App',
     width: 1200,
