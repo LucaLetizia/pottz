@@ -2,6 +2,12 @@
 
 All notable changes to Pottz will be documented in this file.
 
+## 0.1.5
+
+### Added
+
+- `onStartup` hook in `pottz.config.js` - runs before the SvelteKit server starts and the window opens. Useful for any setup that needs to complete before the app is ready (i.e. spawning sidecar processes)
+
 ## 0.1.4
 
 ### Fixed
