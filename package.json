@@ -1,6 +1,6 @@
 {
   "name": "pottz",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Ship your SvelteKit app as a native desktop app",
   "author": {
     "name": "lucaletizia",

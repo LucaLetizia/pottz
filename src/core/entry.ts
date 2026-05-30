@@ -43,6 +43,11 @@ if (isWorkerMode) {
   const { vfs } = await import('./vfs.generated.ts');
   const { Server } = await import('../${outDir}/server/index.js');
   const { manifest } = await import('../${outDir}/server/manifest.js');
+  const { default: config } = await import('../pottz.config.js');
+
+  if(config?.onStartup){
+    await config.onStartup();
+  }
 
   // Pre-import all server chunks so __memo lazy imports resolve instantly
 ${chunkImports}

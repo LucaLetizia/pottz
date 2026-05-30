@@ -155,6 +155,7 @@ This will:
 ```ts
 /** @type {import('pottz').PottzConfig} */
 export default {
+  //onStartup: async () => {},
   window: {
     title: 'My App',
     width: 1200,
@@ -199,6 +200,25 @@ dist/
 ├── linux-x64/my-app
 └── windows-x64/my-app.exe
 ```
+
+---
+
+## Startup hook
+
+You can define an optional `onStartup` function in `pottz.config.js` that runs before the SvelteKit server starts and the window opens
+
+```ts
+export default {
+  onStartup: async () => {
+    // spawn PocketBase as a sidecar
+    Bun.spawn(['./pocketbase/pocketbase', 'serve', '--http=127.0.0.1:8090']);
+  },
+  window: { ... },
+  build: { ... },
+}
+```
+
+The hook only runs inside the compiled Pottz binary, so you can safely use Bun APIs here without Node fallbacks
 
 ---
 

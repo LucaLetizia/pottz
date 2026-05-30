@@ -138,6 +138,7 @@ describe('scaffoldConfig', () => {
   it('creates pottz.config.js if it does not exist', async () => {
     await scaffoldConfig();
     const content = await readFile(join(tmpDir, 'pottz.config.js'), 'utf-8');
+    expect(content).toContain('onStartup');
     expect(content).toContain('PottzConfig');
     expect(content).toContain('window');
     expect(content).toContain('build');

@@ -1,5 +1,6 @@
 /** @type {import('pottz').PottzConfig} */
 export default {
+  //onStartup: async () => {},
   window: {
     title: 'My App',
     width: 1200,
