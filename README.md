@@ -156,6 +156,7 @@ This will:
 /** @type {import('pottz').PottzConfig} */
 export default {
   //onStartup: async () => {},
+  //onExit: async () => {},
   window: {
     title: 'My App',
     width: 1200,
@@ -203,7 +204,11 @@ dist/
 
 ---
 
-## Startup hook
+## Hooks
+
+Pottz provides two optional lifecycle hooks in `pottz.config.js` that let you run code at key points during the app's lifecycle. Both hooks support async functions and only run inside the compiled binary
+
+### Startup hook
 
 You can define an optional `onStartup` function in `pottz.config.js` that runs before the SvelteKit server starts and the window opens
 
@@ -219,6 +224,22 @@ export default {
 ```
 
 The hook only runs inside the compiled Pottz binary, so you can safely use Bun APIs here without Node fallbacks
+
+### Exit hook
+
+You can define an optional `onExit` function in `pottz.config.js` that runs before the app closes
+
+```ts
+export default {
+  onExit: async () => {
+    // gracefully shut down PocketBase or flush state
+  },
+  window: { ... },
+  build: { ... },
+}
+```
+
+Child processes spawned in `onStartup` are automatically terminated when the app closes. Use `onExit` if you need to perform async cleanup before that happens
 
 ---
 

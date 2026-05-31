@@ -2,6 +2,12 @@
 
 All notable changes to Pottz will be documented in this file.
 
+## 0.1.6
+
+### Added
+
+- `onExit` hook in `pottz.config.js` - runs before the app process exits. Useful for any cleanup needed before shutting the app (i.e. saving state, graceful shutdown of sidecars)
+
 ## 0.1.5
 
 ### Added

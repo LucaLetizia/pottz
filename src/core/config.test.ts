@@ -139,6 +139,7 @@ describe('scaffoldConfig', () => {
     await scaffoldConfig();
     const content = await readFile(join(tmpDir, 'pottz.config.js'), 'utf-8');
     expect(content).toContain('onStartup');
+    expect(content).toContain('onExit');
     expect(content).toContain('PottzConfig');
     expect(content).toContain('window');
     expect(content).toContain('build');

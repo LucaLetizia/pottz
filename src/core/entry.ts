@@ -113,13 +113,16 @@ const serverEnv = {
     }
   });
 
-  function cleanup() {
-    bunServer.stop();
+  async function cleanup() {
+    if(config?.onExit){
+      await config.onExit();
+    }
+    await bunServer.stop();
     process.exit(0);
   }
 
-  process.on('SIGINT', cleanup);
-  process.on('SIGTERM', cleanup);
+  process.on('SIGINT', () => { cleanup().catch(console.error); });
+  process.on('SIGTERM', () => { cleanup().catch(console.error); });
 
   const webviewProcess = Bun.spawn(
     [process.execPath, '--webview-worker', '--url', \`http://127.0.0.1:\${port}\`],
