@@ -8,6 +8,10 @@ All notable changes to Pottz will be documented in this file.
 
 - `onExit` hook in `pottz.config.js` - runs before the app process exits. Useful for any cleanup needed before shutting the app (i.e. saving state, graceful shutdown of sidecars)
 
+### Changed
+
+- Rewrote desktop entry generation to use a TypeScript template file with `__POTTZ_TOKEN__` placeholders instead of an inline template string, improving maintainability and editor support
+
 ## 0.1.5
 
 ### Added
