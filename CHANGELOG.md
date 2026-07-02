@@ -2,6 +2,17 @@
 
 All notable changes to Pottz will be documented in this file.
 
+## 0.1.6
+
+### Added
+
+- `onExit` hook in `pottz.config.js` - runs before the app process exits. Useful for any cleanup needed before shutting the app (i.e. saving state, graceful shutdown of sidecars)
+
+### Changed
+
+- Rewrote desktop entry generation to use a TypeScript template file with `__POTTZ_TOKEN__` placeholders instead of an inline template string, improving maintainability and editor support
+- `pottz init` and `pottz dev` now detect `vite.config.ts/js` (with `@sveltejs/kit/vite`) as the primary project config, falling back to `svelte.config.ts/js` for older projects. This adds compatibility with SvelteKit 2.62+ where `svelte.config.js` is no longer required
+
 ## 0.1.5
 
 ### Added

@@ -1,6 +1,152 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import {
+  detectConfigFile,
+  hasPottzOrigin,
+  hasActiveTrustedOrigins,
+} from './sveltekit';
 import { tryPatchCsrf } from './sveltekit';
 
+describe('detectConfigFile', () => {
+  let tmpDir: string;
+  let originalCwd: string;
+
+  beforeEach(async () => {
+    tmpDir = await mkdtemp(join(tmpdir(), 'pottz-test-'));
+    originalCwd = process.cwd();
+    process.chdir(tmpDir);
+  });
+
+  afterEach(async () => {
+    process.chdir(originalCwd);
+    await rm(tmpDir, { recursive: true, force: true });
+  });
+
+  it('returns vite.config.ts if it contains @sveltejs/kit/vite with config', async () => {
+    await writeFile(
+      'vite.config.ts',
+      `import { sveltekit } from '@sveltejs/kit/vite'\nsveltekit({ adapter: adapter() })`,
+    );
+    expect(await detectConfigFile()).toBe('vite.config.ts');
+  });
+
+  it('returns vite.config.js if it contains @sveltejs/kit/vite with config', async () => {
+    await writeFile(
+      'vite.config.js',
+      `import { sveltekit } from '@sveltejs/kit/vite'\nsveltekit({ adapter: adapter() })`,
+    );
+    expect(await detectConfigFile()).toBe('vite.config.js');
+  });
+
+  it('prefers vite.config.ts over vite.config.js', async () => {
+    await writeFile(
+      'vite.config.ts',
+      `import { sveltekit } from '@sveltejs/kit/vite'\nsveltekit({ adapter: adapter() })`,
+    );
+    await writeFile(
+      'vite.config.js',
+      `import { sveltekit } from '@sveltejs/kit/vite'\nsveltekit({ adapter: adapter() })`,
+    );
+    expect(await detectConfigFile()).toBe('vite.config.ts');
+  });
+
+  it('skips vite config that does not contain @sveltejs/kit/vite', async () => {
+    await writeFile('vite.config.ts', `import { defineConfig } from 'vite'`);
+    await writeFile('svelte.config.js', `export default {}`);
+    expect(await detectConfigFile()).toBe('svelte.config.js');
+  });
+
+  it('falls back to svelte.config.ts if no valid vite config found', async () => {
+    await writeFile('svelte.config.ts', `export default {}`);
+    expect(await detectConfigFile()).toBe('svelte.config.ts');
+  });
+
+  it('prefers svelte.config.ts over svelte.config.js', async () => {
+    await writeFile('svelte.config.ts', `export default {}`);
+    await writeFile('svelte.config.js', `export default {}`);
+    expect(await detectConfigFile()).toBe('svelte.config.ts');
+  });
+
+  it('falls back to svelte.config.js if no svelte.config.ts found', async () => {
+    await writeFile('svelte.config.js', `export default {}`);
+    expect(await detectConfigFile()).toBe('svelte.config.js');
+  });
+
+  it('returns null if no config file found', async () => {
+    expect(await detectConfigFile()).toBeNull();
+  });
+
+  it('returns null if vite config exists but is not a SvelteKit project', async () => {
+    await writeFile('vite.config.ts', `import { defineConfig } from 'vite'`);
+    expect(await detectConfigFile()).toBeNull();
+  });
+});
+
+describe('hasPottzOrigin', () => {
+  it('returns true if POTTZ_ORIGIN is in trustedOrigins', () => {
+    const content = `csrf: { trustedOrigins: process.env.POTTZ_ORIGIN ? [process.env.POTTZ_ORIGIN] : [] }`;
+    expect(hasPottzOrigin(content)).toBe(true);
+  });
+
+  it('returns false if trustedOrigins exists but without POTTZ_ORIGIN', () => {
+    const content = `csrf: { trustedOrigins: ['https://example.com'] }`;
+    expect(hasPottzOrigin(content)).toBe(false);
+  });
+
+  it('returns false if POTTZ_ORIGIN is commented out with //', () => {
+    const content = `// trustedOrigins: process.env.POTTZ_ORIGIN ? [process.env.POTTZ_ORIGIN] : []`;
+    expect(hasPottzOrigin(content)).toBe(false);
+  });
+
+  it('returns false if content is empty', () => {
+    expect(hasPottzOrigin('')).toBe(false);
+  });
+
+  it('returns false if POTTZ_ORIGIN appears but not in trustedOrigins', () => {
+    const content = `const origin = process.env.POTTZ_ORIGIN`;
+    expect(hasPottzOrigin(content)).toBe(false);
+  });
+});
+
+describe('hasActiveTrustedOrigins', () => {
+  it('returns true if trustedOrigins is present and uncommented', () => {
+    const content = `csrf: { trustedOrigins: ['https://example.com'] }`;
+    expect(hasActiveTrustedOrigins(content)).toBe(true);
+  });
+
+  it('returns false if trustedOrigins is commented out with //', () => {
+    const content = `// trustedOrigins: ['https://example.com']`;
+    expect(hasActiveTrustedOrigins(content)).toBe(false);
+  });
+
+  it('returns false if trustedOrigins is not present', () => {
+    const content = `csrf: { checkOrigin: false }`;
+    expect(hasActiveTrustedOrigins(content)).toBe(false);
+  });
+
+  it('returns false if content is empty', () => {
+    expect(hasActiveTrustedOrigins('')).toBe(false);
+  });
+
+  it('returns true if trustedOrigins appears after other content on the same line', () => {
+    const content = `  csrf: { trustedOrigins: [] }`;
+    expect(hasActiveTrustedOrigins(content)).toBe(true);
+  });
+
+  it('handles multiline config correctly', () => {
+    const content = `
+const config = {
+  kit: {
+    csrf: {
+      trustedOrigins: ['https://example.com']
+    }
+  }
+}`;
+    expect(hasActiveTrustedOrigins(content)).toBe(true);
+  });
+});
 describe('tryPatchCsrf', () => {
   describe('basic patching', () => {
     it('injects csrf block after kit: {', () => {
