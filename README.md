@@ -125,7 +125,7 @@ This means:
 
 ### 1. Configure adapter-node
 
-Make sure your `svelte.config.js` uses `adapter-node`:
+Make sure your SvelteKit config uses `adapter-node`. If you're using `svelte.config.js`:
 
 ```js
 import adapter from '@sveltejs/adapter-node';
@@ -137,6 +137,18 @@ export default {
 };
 ```
 
+Or if you're using `vite.config.ts` (SvelteKit 2.62+):
+
+```ts
+import adapter from '@sveltejs/adapter-node';
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  plugins: [sveltekit({ adapter: adapter() })],
+});
+```
+
 ### 2. Run init
 
 ```bash
@@ -145,7 +157,7 @@ bunx pottz init
 
 This will:
 
-- Patch your `svelte.config.js` with the required CSRF config
+- Patch your SvelteKit config (`vite.config.ts/js` or `svelte.config.ts/js`) with the required CSRF config
 - Create `pottz.config.js`
 - Install `webview-bun`
 - Update `.gitignore`
@@ -303,10 +315,10 @@ Binaries are ~110MB uncompressed. The majority of this is the Bun runtime
 
 ## Adapter-node options
 
-If you've customised `adapter-node` in your `svelte.config.js`, mirror those options in `pottz.config.js`:
+If you've customised `adapter-node`, mirror those options in `pottz.config.js`:
 
 ```js
-// svelte.config.js
+// svelte.config.js or vite.config.ts
 adapter({ out: 'my-build', envPrefix: 'APP_' });
 ```
 

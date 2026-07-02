@@ -7,8 +7,7 @@ import {
   getPackageManager,
 } from '../utils/platform';
 
-const CSRF_INSTRUCTIONS = `
-⚠  Add this to your svelte.config.js/ts kit config:
+const CSRF_INSTRUCTIONS = `Add this to your SvelteKit config in either svelte.config.ts/js or vite.config.ts/js:
 
    csrf: {
      trustedOrigins: process.env.POTTZ_ORIGIN ? [process.env.POTTZ_ORIGIN] : []
@@ -37,12 +36,12 @@ export const buildSvelteKit = async () => {
 export const validateSvelteKitProject = async () => {
   log.step('Validating SvelteKit project...');
 
-  const hasSvelteConfig =
-    existsSync('svelte.config.js') || existsSync('svelte.config.ts');
+  const hasViteConfig =
+    existsSync('vite.config.ts') || existsSync('vite.config.js');
 
-  if (!hasSvelteConfig) {
+  if (!hasViteConfig) {
     panic(
-      'No svelte.config.js found. Run pottz init from the root of a SvelteKit project',
+      'No vite.config.ts or vite.config.js found. Run pottz init from the root of a SvelteKit project',
     );
   }
 
@@ -71,7 +70,9 @@ export const checkAdapterNode = async () => {
     log.warn('@sveltejs/adapter-node is not installed');
     log.info('Pottz requires adapter-node. Install it with:');
     log.info(` ${addCmd} @sveltejs/adapter-node`);
-    log.info('Then update your svelte.config.js to use it');
+    log.info(
+      'Then update your SvelteKit config in either svelte.config.ts/js or vite.config.ts/js to use it',
+    );
     log.blank();
     panic('Please install adapter-node and re-run pottz init');
   }
@@ -96,28 +97,77 @@ export const detectAdapter = async (outDir: string): Promise<void> => {
     }
     panic(
       `Build output not found at ./${outDir}/server/index.js\n` +
-        '  Make sure you are using adapter-node in your svelte.config.js\n' +
+        '  Make sure you are using adapter-node in your SvelteKit config in either svelte.config.ts/js or vite.config.ts/js\n' +
         '  and that your build completed successfully',
     );
   }
 };
 
 // ============================================
-// SVELTE CONFIG PATCHING
+// SVELTEKIT CONFIG PATCHING
 // ============================================
+export const detectConfigFile = async (): Promise<string | null> => {
+  for (const viteConfig of ['vite.config.ts', 'vite.config.js']) {
+    if (existsSync(viteConfig)) {
+      const content = await readFile(viteConfig, 'utf-8');
+      if (
+        content.includes('@sveltejs/kit/vite') &&
+        content.match(/sveltekit\s*\(\s*\{/)
+      ) {
+        return viteConfig;
+      }
+    }
+  }
+  for (const svelteConfig of ['svelte.config.ts', 'svelte.config.js']) {
+    if (existsSync(svelteConfig)) return svelteConfig;
+  }
+  return null;
+};
 
-export const patchSvelteConfig = async () => {
-  log.step('Patching svelte.config...');
+export const hasPottzOrigin = (content: string) => {
+  return content
+    .split('\n')
+    .some(
+      (line) =>
+        line.includes('trustedOrigins') &&
+        line.includes('POTTZ_ORIGIN') &&
+        !line.trimStart().startsWith('//'),
+    );
+};
 
-  const configPath = existsSync('svelte.config.ts')
-    ? 'svelte.config.ts'
-    : 'svelte.config.js';
+export const hasActiveTrustedOrigins = (content: string) => {
+  return content
+    .split('\n')
+    .some(
+      (line) =>
+        line.includes('trustedOrigins') && !line.trimStart().startsWith('//'),
+    );
+};
+
+export const patchKitConfig = async () => {
+  log.step('Patching SvelteKit config...');
+
+  const configPath = await detectConfigFile();
+  if (!configPath) {
+    panic(
+      'No SvelteKit config found. Make sure you have a vite.config.ts/js (with @sveltejs/kit/vite) or svelte.config.ts/js in your project root',
+    );
+  }
 
   const content = await readFile(configPath, 'utf-8');
 
-  // Already has trustedOrigins - nothing to do
-  if (content.includes('trustedOrigins')) {
-    log.success('csrf.trustedOrigins already configured');
+  if (hasPottzOrigin(content)) {
+    log.success('csrf.trustedOrigins already configured for Pottz');
+    return;
+  }
+
+  if (hasActiveTrustedOrigins(content)) {
+    log.blank();
+    log.warn(
+      'Found existing trustedOrigins config — not patching automatically',
+    );
+    log.info(CSRF_INSTRUCTIONS);
+    log.blank();
     return;
   }
 
@@ -138,7 +188,7 @@ export const patchSvelteConfig = async () => {
 
   if (patched) {
     await writeFile(configPath, patched, 'utf-8');
-    log.success('Added csrf.trustedOrigins to svelte.config');
+    log.success(`Added csrf.trustedOrigins to ${configPath}`);
   } else {
     // Can't patch safely - print instructions
     log.warn(CSRF_INSTRUCTIONS);

@@ -11,6 +11,7 @@ All notable changes to Pottz will be documented in this file.
 ### Changed
 
 - Rewrote desktop entry generation to use a TypeScript template file with `__POTTZ_TOKEN__` placeholders instead of an inline template string, improving maintainability and editor support
+- `pottz init` and `pottz dev` now detect `vite.config.ts/js` (with `@sveltejs/kit/vite`) as the primary project config, falling back to `svelte.config.ts/js` for older projects. This adds compatibility with SvelteKit 2.62+ where `svelte.config.js` is no longer required
 
 ## 0.1.5
 
