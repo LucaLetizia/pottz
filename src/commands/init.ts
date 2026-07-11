@@ -1,7 +1,7 @@
 import { log } from '../utils/log';
 import {
   checkAdapterNode,
-  patchSvelteConfig,
+  patchKitConfig,
   validateSvelteKitProject,
 } from '../core/sveltekit';
 import { installWebviewBun, scaffoldConfig } from '../core/config';
@@ -19,7 +19,7 @@ export const run = async () => {
   await checkAdapterNode();
 
   // 3. Patch svelte.config
-  await patchSvelteConfig();
+  await patchKitConfig();
 
   // 4. Scaffold pottz.config.js
   await scaffoldConfig();

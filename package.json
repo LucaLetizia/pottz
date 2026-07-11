@@ -1,6 +1,6 @@
 {
   "name": "pottz",
-  "version": "0.1.5",
+  "version": "0.1.7",
   "description": "Ship your SvelteKit app as a native desktop app",
   "author": {
     "name": "lucaletizia",
@@ -18,7 +18,8 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "bun run src/cli.ts",
-    "build": "bun build ./src/cli.ts ./src/index.ts --outdir ./dist --target bun && tsc -p tsconfig.build.json",
+    "copy-templates": "bun -e \"await Bun.write('./dist/templates/entry.template.ts', Bun.file('./src/templates/entry.template.ts'))\"",
+    "build": "bun build ./src/cli.ts ./src/index.ts --outdir ./dist --target bun && bun run copy-templates && tsc -p tsconfig.build.json",
     "prepublishOnly": "bun test && bun run build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

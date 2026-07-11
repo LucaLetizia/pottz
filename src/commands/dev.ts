@@ -1,21 +1,17 @@
 import { log, panic } from '../utils/log';
 import { loadConfig } from '../core/config';
-import { existsSync } from 'node:fs';
 import {
   checkWebviewBun,
   execStream,
   getPackageManager,
 } from '../utils/platform';
+import { validateSvelteKitProject } from '../core/sveltekit';
 
 export const run = async () => {
   checkWebviewBun();
 
   // Validate we're in a SvelteKit project
-  if (!existsSync('svelte.config.js') && !existsSync('svelte.config.ts')) {
-    panic(
-      'No svelte.config.js found. Run this from the root of a SvelteKit project',
-    );
-  }
+  await validateSvelteKitProject();
 
   const config = await loadConfig();
 

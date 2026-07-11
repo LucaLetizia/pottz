@@ -129,7 +129,7 @@ This means:
 
 ### 1. Configure adapter-node
 
-Make sure your `svelte.config.js` uses `adapter-node`:
+Make sure your SvelteKit config uses `adapter-node`. If you're using `svelte.config.js`:
 
 ```js
 import adapter from '@sveltejs/adapter-node';
@@ -141,6 +141,18 @@ export default {
 };
 ```
 
+Or if you're using `vite.config.ts` (SvelteKit 2.62+):
+
+```ts
+import adapter from '@sveltejs/adapter-node';
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  plugins: [sveltekit({ adapter: adapter() })],
+});
+```
+
 ### 2. Run init
 
 ```bash
@@ -149,7 +161,7 @@ bunx pottz init
 
 This will:
 
-- Patch your `svelte.config.js` with the required CSRF config
+- Patch your SvelteKit config (`vite.config.ts/js` or `svelte.config.ts/js`) with the required CSRF config
 - Create `pottz.config.js`
 - Install `webview-bun`
 - Update `.gitignore`
@@ -159,6 +171,8 @@ This will:
 ```ts
 /** @type {import('pottz').PottzConfig} */
 export default {
+  //onStartup: async () => {},
+  //onExit: async () => {},
   window: {
     title: 'My App',
     width: 1200,
@@ -203,6 +217,45 @@ dist/
 ├── linux-x64/my-app
 └── windows-x64/my-app.exe
 ```
+
+---
+
+## Hooks
+
+Pottz provides two optional lifecycle hooks in `pottz.config.js` that let you run code at key points during the app's lifecycle. Both hooks support async functions and only run inside the compiled binary
+
+### Startup hook
+
+You can define an optional `onStartup` function in `pottz.config.js` that runs before the SvelteKit server starts and the window opens
+
+```ts
+export default {
+  onStartup: async () => {
+    // spawn PocketBase as a sidecar
+    Bun.spawn(['./pocketbase/pocketbase', 'serve', '--http=127.0.0.1:8090']);
+  },
+  window: { ... },
+  build: { ... },
+}
+```
+
+The hook only runs inside the compiled Pottz binary, so you can safely use Bun APIs here without Node fallbacks
+
+### Exit hook
+
+You can define an optional `onExit` function in `pottz.config.js` that runs before the app closes
+
+```ts
+export default {
+  onExit: async () => {
+    // gracefully shut down PocketBase or flush state
+  },
+  window: { ... },
+  build: { ... },
+}
+```
+
+Child processes spawned in `onStartup` are automatically terminated when the app closes. Use `onExit` if you need to perform async cleanup before that happens
 
 ---
 
@@ -264,10 +317,10 @@ Binaries are ~110MB uncompressed. The majority of this is the Bun runtime
 
 ## Adapter-node options
 
-If you've customised `adapter-node` in your `svelte.config.js`, mirror those options in `pottz.config.js`:
+If you've customised `adapter-node`, mirror those options in `pottz.config.js`:
 
 ```js
-// svelte.config.js
+// svelte.config.js or vite.config.ts
 adapter({ out: 'my-build', envPrefix: 'APP_' });
 ```
 
