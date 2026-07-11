@@ -8,7 +8,9 @@ export type Target =
   | 'linux-x64'
   | 'linux-arm64'
   | 'windows-x64'
-  | 'windows-arm64';
+  | 'windows-arm64'
+  | 'darwin-x64'
+  | 'darwin-arm64';
 
 export interface PottzConfig {
   onStartup?: () => Promise<void> | void;
@@ -44,6 +46,8 @@ const VALID_TARGETS = [
   'linux-arm64',
   'windows-x64',
   'windows-arm64',
+  'darwin-x64',
+  'darwin-arm64',
 ];
 
 export const CONFIG_TEMPLATE = `/** @type {import('pottz').PottzConfig} */
@@ -58,7 +62,7 @@ export default {
     minHeight: 600,
   },
   build: {
-    targets: ['linux-x64', 'windows-x64'],
+    targets: ['linux-x64', 'windows-x64', 'darwin-x64'],
     outDir: 'dist',
     appName: 'my-app',
     windows: {
@@ -96,22 +100,6 @@ export const validateConfig = (config: PottzConfig): void => {
   }
   if (!config.build?.outDir) {
     panic('pottz.config.js is missing build.outDir');
-  }
-
-  if (process.platform === 'darwin') {
-    const hasMacTarget = config.build.targets.some((t) =>
-      t.startsWith('darwin'),
-    );
-
-    if (hasMacTarget) {
-      panic('macOS targets are not supported');
-    }
-
-    log.warn('Running on macOS - cross-compiling for Windows/Linux only');
-    log.warn(
-      'You cannot run or test the app locally until macOS support is added',
-    );
-    log.blank();
   }
 
   // Target validation

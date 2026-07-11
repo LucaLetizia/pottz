@@ -41,6 +41,10 @@ sudo apt install libgtk-4-1 libwebkitgtk-6.0-4 libvulkan1
 - Windows 11 - nothing required, WebView2 ships with the OS
 - Windows 10 - [WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) required
 
+**To run the binary (macOS):**
+
+- No additional dependencies required
+
 **End users don't need Bun installed**
 
 ---
@@ -303,9 +307,7 @@ Binaries are ~110MB uncompressed. The majority of this is the Bun runtime
 
 ## Gotchas
 
-**macOS** - not supported. You can cross-compile for Linux and Windows from a Mac, but you can't run or test the app locally
-
-**`adapter-static`** - not supported. Pottz requires `adapter-node`
+**SvelteKit adapter** - Pottz requires `adapter-node`
 
 **Windows icon** - the `icon` option in `pottz.config.js` only works when building on Windows natively. Cross-compiling from Linux to Windows will produce a working binary but the icon won't be applied
 

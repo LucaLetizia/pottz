@@ -10,10 +10,6 @@ import { validateSvelteKitProject } from '../core/sveltekit';
 export const run = async () => {
   checkWebviewBun();
 
-  if (process.platform === 'darwin') {
-    panic('pottz dev is not supported on macOS');
-  }
-
   // Validate we're in a SvelteKit project
   await validateSvelteKitProject();
 

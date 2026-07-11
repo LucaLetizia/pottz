@@ -2,6 +2,12 @@
 
 All notable changes to Pottz will be documented in this file.
 
+## 0.1.7
+
+### Added
+
+- macOS support
+
 ## 0.1.6
 
 ### Added

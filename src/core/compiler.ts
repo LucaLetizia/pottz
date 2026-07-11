@@ -3,12 +3,9 @@ import { mkdir } from 'node:fs/promises';
 import { log, panic } from '../utils/log';
 import { patchWindowsSubsystem } from './patcher';
 import { GENERATED_ENTRY } from './entry';
-import type { PottzConfig } from './config';
+import type { PottzConfig, Target } from './config';
 
-export const compile = async (
-  target: 'linux-x64' | 'linux-arm64' | 'windows-x64' | 'windows-arm64',
-  config: PottzConfig,
-) => {
+export const compile = async (target: Target, config: PottzConfig) => {
   log.step(`Compiling for ${target}...`);
 
   const outDir = config.build.outDir;
